@@ -122,7 +122,7 @@ export class AzureStorageDeployDriverImpl extends AzureDeployImpl {
     azureResource: AzureResourceInfo,
     azureCredential: TokenCredential
   ): Promise<ContainerClient> {
-    const blobServiceClient = await createBlobServiceClient(azureResource, azureCredential);
+    const blobServiceClient = createBlobServiceClient(azureResource, azureCredential);
     return await wrapAzureOperation(
       async () => {
         const container = blobServiceClient.getContainerClient(

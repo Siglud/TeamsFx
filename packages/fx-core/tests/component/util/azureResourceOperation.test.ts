@@ -4,10 +4,7 @@ import chaiAsPromised from "chai-as-promised";
 import "mocha";
 import * as sinon from "sinon";
 import * as tools from "../../../src/common/utils";
-import {
-  generateSasToken,
-  getAzureAccountCredential,
-} from "../../../src/component/utils/azureResourceOperation";
+import { getAzureAccountCredential } from "../../../src/component/utils/azureResourceOperation";
 import { TestAzureAccountProvider } from "./azureAccountMock";
 chai.use(chaiAsPromised);
 
@@ -26,32 +23,5 @@ describe("Azure Resource Operation test", () => {
     const tokenProvider = new TestAzureAccountProvider();
     sandbox.stub(tokenProvider, "getIdentityCredentialAsync").resolves(undefined);
     await chai.expect(getAzureAccountCredential(tokenProvider)).to.be.eventually.rejectedWith("");
-  });
-
-  it("should generate Sas token error", async () => {
-    const storageAccounts = {
-      listAccountSAS: async function (): Promise<ListAccountSasResponse> {
-        return {
-          accountSasToken: "abc",
-        };
-      },
-    } as unknown as StorageAccounts;
-    sandbox.stub(storageAccounts, "listAccountSAS").throws(new Error("error"));
-    await chai
-      .expect(generateSasToken(storageAccounts, "test", "test"))
-      .to.be.eventually.rejectedWith("");
-  });
-
-  it("should generate Sas token with empty response", async () => {
-    const storageAccounts = {
-      listAccountSAS: async function (): Promise<ListAccountSasResponse> {
-        return {
-          accountSasToken: "",
-        };
-      },
-    } as unknown as StorageAccounts;
-    await chai
-      .expect(generateSasToken(storageAccounts, "test", "test"))
-      .to.be.eventually.rejectedWith("");
   });
 });

@@ -80,7 +80,7 @@ export class AzureStorageStaticWebsiteConfigDriver implements StepDriver {
       AzureStorageStaticWebsiteConfigDriver.RESOURCE_PATTERN
     );
     const azureTokenCredential = await getAzureAccountCredential(context.azureAccountProvider);
-    const azureBlobClient = await createBlobServiceClient(azureInfo, azureTokenCredential);
+    const azureBlobClient = createBlobServiceClient(azureInfo, azureTokenCredential);
 
     if (await this.isStorageStatusWebsiteEnabled(azureInfo, azureBlobClient, context)) {
       logger.debug(

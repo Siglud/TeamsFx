@@ -59,59 +59,18 @@ export async function getAzureAccountCredential(
  * @param azureResource azure resource info
  * @param azureCredential azure user credential
  */
-export async function createBlobServiceClient(
+export function createBlobServiceClient(
   azureResource: AzureResourceInfo,
   azureCredential: TokenCredential
-): Promise<BlobServiceClient> {
-  const storageAccountClient = new StorageManagementClient(
-    azureCredential,
-    azureResource.subscriptionId
-  ).storageAccounts;
-  const sasToken = await generateSasToken(
-    storageAccountClient,
-    azureResource.resourceGroupName,
-    azureResource.instanceId
-  );
+): BlobServiceClient {
   const blobUri = getBlobUri(azureResource.instanceId);
-  return await getBlobServiceClient(blobUri, sasToken);
-}
-
-export async function generateSasToken(
-  client: StorageAccounts,
-  resourceGroupName: string,
-  storageName: string
-): Promise<string> {
-  const accountSasParameters: AccountSasParameters = {
-    services: "bf",
-    resourceTypes: "sco",
-    permissions: "rwld",
-    sharedAccessStartTime: new Date(Date.now() - DeployConstant.SAS_TOKEN_LIFE_TIME_PADDING),
-    sharedAccessExpiryTime: new Date(Date.now() + DeployConstant.SAS_TOKEN_LIFE_TIME),
-  };
-  const token = await wrapAzureOperation(
-    async () =>
-      (
-        await client.listAccountSAS(resourceGroupName, storageName, accountSasParameters)
-      ).accountSasToken,
-    (e) =>
-      ExternalApiCallError.getSasTokenRemoteError(
-        DeployConstant.DEPLOY_ERROR_TYPE,
-        JSON.stringify(e)
-      ),
-    (e) =>
-      ExternalApiCallError.getSasTokenError(DeployConstant.DEPLOY_ERROR_TYPE, JSON.stringify(e))
-  );
-  if (!token) {
-    throw ExternalApiCallError.getSasTokenError(DeployConstant.DEPLOY_ERROR_TYPE);
-  }
-  return token;
+  return getBlobServiceClient(blobUri, azureCredential);
 }
 
 function getBlobUri(storageName: string): string {
   return `https://${storageName}.blob.core.windows.net`;
 }
 
-function getBlobServiceClient(blobUri: string, sasToken: string): Promise<BlobServiceClient> {
-  const connectionString = `BlobEndpoint=${blobUri};SharedAccessSignature=${sasToken}`;
-  return Promise.resolve(BlobServiceClient.fromConnectionString(connectionString));
+function getBlobServiceClient(blobUri: string, token: TokenCredential): BlobServiceClient {
+  return new BlobServiceClient(blobUri, token);
 }
