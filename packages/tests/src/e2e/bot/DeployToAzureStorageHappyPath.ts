@@ -26,6 +26,7 @@ describe("Provision and deploy a Azure Storage", async function () {
   const projectId = getUuid();
   const envName = environmentNameManager.getDefaultEnvName();
   const rgName = appName + "-rg";
+  const env = Object.assign({}, process.env);
 
   it("should be provision without problem", async () => {
     fs.mkdirSync(projectPath, { recursive: true });
@@ -124,15 +125,13 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
     // run provision
     const result = await createResourceGroup(rgName, "westus");
     expect(result).to.be.true;
-    process.env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
+    env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
     await execAsyncWithRetry("teamsapp provision --env dev", {
       cwd: projectPath,
-      env: process.env,
+      env: env,
       timeout: 0,
     });
     console.log(`[Successfully] provision for ${projectPath}`);
-
-    const env = Object.assign({}, process.env);
 
     // deploy
     const cmdStr = "teamsapp deploy";
