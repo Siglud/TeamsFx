@@ -17,6 +17,7 @@ import * as fs from "fs";
 import { getUuid } from "../../commonlib";
 import { expect } from "chai";
 import { environmentNameManager } from "@microsoft/teamsfx-core";
+import { Executor } from "../../utils/executor";
 
 describe("Provision and deploy a Azure Storage", async function () {
   // create a project with Azure Storage
@@ -125,12 +126,9 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
     // run provision
     const result = await createResourceGroup(rgName, "westus");
     expect(result).to.be.true;
-    env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
-    await execAsyncWithRetry("teamsapp provision --env dev", {
-      cwd: projectPath,
-      env: env,
-      timeout: 0,
-    });
+    process.env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
+    const { success } = await Executor.provision(projectPath, envName);
+    expect(success).to.be.true;
     console.log(`[Successfully] provision for ${projectPath}`);
 
     // deploy
