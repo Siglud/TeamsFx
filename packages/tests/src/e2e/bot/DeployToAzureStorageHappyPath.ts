@@ -141,7 +141,7 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
 
     // request to index.html to check the deployment result
     const TAB_DOMAIN = process.env["TAB_DOMAIN"];
-    const response = await fetch(`https://${TAB_DOMAIN}`);
+    const response = await fetch(TAB_DOMAIN);
     expect(response.status).to.equal(200);
   });
 
