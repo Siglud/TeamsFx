@@ -34,7 +34,7 @@ describe("Provision and deploy a Azure Storage", async function () {
     // write teamsapp.yml
     fs.writeFileSync(
       path.join(projectPath, "teamsapp.yml"),
-      String.raw`
+      `
 # yaml-language-server: $schema=https://aka.ms/teams-toolkit/v1.7/yaml.schema.json
 version: v1.7
 
@@ -71,7 +71,7 @@ projectId: ${projectId}`,
     // write azure.bicep
     fs.writeFileSync(
       path.join(projectPath, "infra", "azure.bicep"),
-      String.raw`
+      `
 param resourceBaseName string
 
 resource storage 'Microsoft.Storage/storageAccounts@2021-06-01' = {
@@ -93,7 +93,7 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
     // write azure.parameters.json
     fs.writeFileSync(
       path.join(projectPath, "infra", "azure.parameters.json"),
-      String.raw`{
+      `{
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
@@ -110,7 +110,6 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
       "TEAMSFX_ENV=dev\n" +
         "APP_NAME_SUFFIX=dev\n" +
         "RESOURCE_SUFFIX=381cc5\n" +
-        `AZURE_SUBSCRIPTION_ID=${process.env.AZURE_SUBSCRIPTION_ID}\n` +
         `AZURE_RESOURCE_GROUP_NAME=${rgName}`,
       { encoding: "utf-8", flag: "w" }
     );
@@ -123,15 +122,6 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
     );
 
     // run provision
-    const subsPrefix = process.env.AZURE_SUBSCRIPTION_ID?.substring(0, 5);
-    const subsSuffix = process.env.AZURE_SUBSCRIPTION_ID?.split("-");
-    console.log(
-      `[Start] scaffold to ${projectPath} in ${subsPrefix}-${
-        subsSuffix?.[subsSuffix.length - 1]
-      }`
-    );
-    const tenant = process.env.AZURE_TENANT_ID.split("-");
-    console.log(`tennat id is ${tenant[0]}-xxxxx-${tenant[tenant.length - 1]}`);
     const result = await createResourceGroup(rgName, "westus");
     expect(result).to.be.true;
     process.env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
