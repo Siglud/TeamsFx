@@ -98,7 +98,7 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
   "contentVersion": "1.0.0.0",
   "parameters": {
     "resourceBaseName": {
-      "value": "helloWorld\${{RESOURCE_SUFFIX}}"
+      "value": "hello0world\${{RESOURCE_SUFFIX}}"
     }
   }
 }`,
