@@ -111,7 +111,6 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
         "APP_NAME_SUFFIX=dev\n" +
         "RESOURCE_SUFFIX=381cc5\n" +
         `AZURE_SUBSCRIPTION_ID=${process.env.AZURE_SUBSCRIPTION_ID}\n` +
-        `AZURE_TENANT_ID=${process.env.AZURE_TENANT_ID}\n` +
         `AZURE_RESOURCE_GROUP_NAME=${rgName}`,
       { encoding: "utf-8", flag: "w" }
     );
@@ -124,6 +123,13 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
     );
 
     // run provision
+    const subsPrefix = process.env.AZURE_SUBSCRIPTION_ID?.substring(0, 5);
+    const subsSuffix = process.env.AZURE_SUBSCRIPTION_ID?.split("-");
+    console.log(
+      `[Start] scaffold to ${projectPath} in ${subsPrefix}-${
+        subsSuffix?.[subsSuffix.length - 1]
+      }`
+    );
     const result = await createResourceGroup(rgName, "westus");
     expect(result).to.be.true;
     process.env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
