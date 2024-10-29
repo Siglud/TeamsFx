@@ -130,6 +130,8 @@ output TAB_DOMAIN string = storage.properties.primaryEndpoints.web`,
         subsSuffix?.[subsSuffix.length - 1]
       }`
     );
+    const tenant = process.env.AZURE_TENANT_ID.split("-");
+    console.log(`tennat id is ${tenant[0]}-xxxxx-${tenant[tenant.length - 1]}`);
     const result = await createResourceGroup(rgName, "westus");
     expect(result).to.be.true;
     process.env["AZURE_RESOURCE_GROUP_NAME"] = rgName;
